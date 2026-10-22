@@ -1,0 +1,289 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>EcoDrop | E-Waste Recycling Tracker</title>
+
+    <link rel="stylesheet" href="style.css">
+
+    <!-- Ethers.js library -->
+    <script src="https://cdn.jsdelivr.net/npm/ethers@6.13.5/dist/ethers.umd.min.js"></script>
+
+    <!-- Application JavaScript -->
+    <script src="app.js" defer></script>
+</head>
+
+<body>
+
+    <!-- Navigation Bar -->
+    <header class="topbar">
+        <a href="#" class="brand">
+            <span class="brand-icon">♻</span>
+            <span>
+                EcoDrop
+                <small>DECENTRALISED E-WASTE TRACKER</small>
+            </span>
+        </a>
+
+        <div class="wallet-area">
+            <span id="networkBadge" class="badge">
+                Sepolia Network
+            </span>
+
+            <button id="connectBtn" class="button button-primary">
+                Connect MetaMask
+            </button>
+        </div>
+    </header>
+
+    <main class="container">
+
+        <!-- Welcome Section -->
+        <section class="hero">
+            <span class="eyebrow">SUSTAINABILITY MEETS BLOCKCHAIN</span>
+
+            <h1>Recycle responsibly.<br>
+                <span>Track transparently.</span>
+            </h1>
+
+            <p class="hero-copy">
+                Register electronic waste, track its collection, and
+                maintain transparent recycling records using blockchain.
+            </p>
+
+            <div class="hero-actions">
+                <button
+                    class="button button-primary"
+                    onclick="document.getElementById('registerSection').scrollIntoView({behavior:'smooth'})">
+                    Register E-Waste
+                </button>
+
+                <button
+                    class="button button-light"
+                    id="refreshBtn">
+                    Refresh Records
+                </button>
+            </div>
+        </section>
+
+        <!-- Dashboard Statistics -->
+        <section class="stats-grid">
+
+            <div class="stat-card">
+                <span class="stat-label">Total Waste Records</span>
+                <strong id="totalCount">0</strong>
+                <span class="stat-foot">Blockchain records</span>
+            </div>
+
+            <div class="stat-card">
+                <span class="stat-label">Awaiting Collection</span>
+                <strong id="pendingCount">0</strong>
+                <span class="stat-foot">Registered items</span>
+            </div>
+
+            <div class="stat-card">
+                <span class="stat-label">Collected Items</span>
+                <strong id="collectedCount">0</strong>
+                <span class="stat-foot">Collection confirmed</span>
+            </div>
+
+        </section>
+
+        <!-- Registration and Verifier Sections -->
+        <section class="content-grid">
+
+            <!-- Register E-Waste -->
+            <div class="panel" id="registerSection">
+
+                <div class="section-heading">
+                    <div>
+                        <span class="eyebrow">CONTRIBUTE</span>
+                        <h2>Register E-Waste</h2>
+                    </div>
+
+                    <span class="step-number">01</span>
+                </div>
+
+                <p class="muted">
+                    Add an electronic item to the recycling tracker.
+                </p>
+
+                <form id="registerForm">
+
+                    <label for="category">Waste Category</label>
+
+                    <select id="category" required>
+                        <option value="">Select a category</option>
+                        <option value="Mobile Phone">Mobile Phone</option>
+                        <option value="Laptop">Laptop</option>
+                        <option value="Battery">Battery</option>
+                        <option value="Computer Parts">Computer Parts</option>
+                        <option value="Other Electronics">Other Electronics</option>
+                    </select>
+
+                    <label for="description">Item Description</label>
+
+                    <textarea
+                        id="description"
+                        rows="3"
+                        maxlength="200"
+                        placeholder="Example: Damaged laptop battery"
+                        required></textarea>
+
+                    <p class="field-note">
+                        Do not include personal or confidential information.
+                    </p>
+
+                    <button
+                        type="submit"
+                        class="button button-primary full-width">
+                        Register on Blockchain
+                    </button>
+
+                </form>
+            </div>
+
+            <!-- Recycler Verification -->
+            <div class="panel">
+
+                <div class="section-heading">
+                    <div>
+                        <span class="eyebrow">AUTHORISATION</span>
+                        <h2>Recycler Management</h2>
+                    </div>
+
+                    <span class="step-number">02</span>
+                </div>
+
+                <p class="muted">
+                    The contract owner can authorise recycling verifiers.
+                    Only authorised wallets can confirm collection.
+                </p>
+
+                <form id="verifierForm">
+
+                    <label for="verifierAddress">
+                        Recycler Wallet Address
+                    </label>
+
+                    <input
+                        type="text"
+                        id="verifierAddress"
+                        placeholder="0x..."
+                        required>
+
+                    <button
+                        type="submit"
+                        class="button button-dark full-width">
+                        Authorise Recycler
+                    </button>
+
+                </form>
+
+                <div class="divider"></div>
+
+                <h3>Confirm Collection</h3>
+
+                <form id="collectForm">
+
+                    <label for="collectId">Waste Record ID</label>
+
+                    <input
+                        type="number"
+                        id="collectId"
+                        min="1"
+                        step="1"
+                        placeholder="Enter record ID"
+                        required>
+
+                    <button
+                        type="submit"
+                        class="button button-primary full-width">
+                        Confirm Collection
+                    </button>
+
+                </form>
+
+            </div>
+        </section>
+
+        <!-- Blockchain Records -->
+        <section class="panel records-panel">
+
+            <div class="section-heading">
+                <div>
+                    <span class="eyebrow">TRANSPARENCY</span>
+                    <h2>Blockchain Waste Records</h2>
+                    <p class="muted">
+                        View registered items and their collection status.
+                    </p>
+                </div>
+
+                <span id="recordCountLabel" class="record-count">
+                    0 records
+                </span>
+            </div>
+
+            <div id="emptyState" class="empty-state">
+                <h3>No records available</h3>
+                <p>
+                    Connect MetaMask and load the contract to display
+                    recycling records.
+                </p>
+            </div>
+
+            <div class="table-wrap">
+                <table id="recordsTable" hidden>
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Waste Details</th>
+                            <th>Registered By</th>
+                            <th>Date</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+
+                    <tbody id="recordsBody">
+                        <!-- Records are inserted by app.js -->
+                    </tbody>
+                </table>
+            </div>
+
+        </section>
+
+        <!-- Transaction Status -->
+        <section class="panel">
+
+            <div class="section-heading">
+                <div>
+                    <span class="eyebrow">BLOCKCHAIN ACTIVITY</span>
+                    <h2>Transaction Status</h2>
+                </div>
+            </div>
+
+            <div class="activity-row">
+                <span>
+                    <span class="activity-dot"
+                          style="display:inline-block;width:8px;height:8px;border-radius:50%;background:#16805d;margin-right:8px">
+                    </span>
+                    <span id="statusText">
+                        Connect MetaMask to get started.
+                    </span>
+                </span>
+            </div>
+
+        </section>
+
+        <footer>
+            <span>EcoDrop · E-Waste Recycling Tracker</span>
+            <span>Educational prototype · Sepolia Testnet</span>
+        </footer>
+
+    </main>
+
+</body>
+</html>
